@@ -1,30 +1,49 @@
-import type { Country } from '../../types';
-import { DataTable } from '../data-table/data-table';
-import {
-  getPopulationForYear,
-  getCo2ForYear,
-  createYearDataMap,
-} from '../../utils/data-transformers';
-import { formatNumber } from '../../utils/format-utils';
+import React, { useMemo } from "react";
+import { formatNumber } from "../../utils/format-utils";
+import styles from "./country-card.module.css";
+import { createYearDataMap, getCo2ForYear, getPopulationForYear } from "../../utils/data-transformers";
+import { DataTable } from "../data-table/data-table";
+import type { Country } from "../../types";
 
-import styles from './country-card.module.css';
+// Component	Status
+// CountryList	✅ useMemo + sort
+// CountryCard	✅ useMemo + memo
+// DataTable	🔜 add memo + ke
 
-type CountryCardProps = {
-  country: Country;
-  selectedYear: number;
-  selectedColumns: string[];
-};
 
-export const CountryCard = ({ country, selectedYear, selectedColumns }: CountryCardProps) => {
-  const yearDataMap = createYearDataMap(country.data);
-  const population = getPopulationForYear(yearDataMap, selectedYear);
-  const co2 = getCo2ForYear(yearDataMap, selectedYear);
+// CountryList ⭐⭐⭐⭐⭐
+// CountryCard ⭐⭐⭐⭐⭐
+// DataTable ⭐⭐⭐⭐
+// Parent handlers ⭐⭐⭐
+// Virtualization ⭐⭐⭐⭐ (bonus)
+
+
+type CountryCardProps = { country: Country; selectedYear: number; selectedColumns: string[] };
+
+export const CountryCard = React.memo(function CountryCard({
+  country,
+  selectedYear,
+  selectedColumns,
+}: CountryCardProps) {
+  const yearDataMap = useMemo(() => {
+    return createYearDataMap(country.data);
+  }, [country.data]);
+
+  const population = useMemo(() => {
+    return getPopulationForYear(yearDataMap, selectedYear);
+  }, [yearDataMap, selectedYear]);
+
+  const co2 = useMemo(() => {
+    return getCo2ForYear(yearDataMap, selectedYear);
+  }, [yearDataMap, selectedYear]);
 
   return (
     <div className={styles.card}>
       <div className={styles.header}>
         <h3 className={styles.title}>{country.id}</h3>
-        {country.iso_code && <span className={styles.isoCode}>{country.iso_code}</span>}
+        {country.iso_code && (
+          <span className={styles.isoCode}>{country.iso_code}</span>
+        )}
       </div>
 
       <div className={styles.stats}>
@@ -36,7 +55,11 @@ export const CountryCard = ({ country, selectedYear, selectedColumns }: CountryC
         </div>
       </div>
 
-      <DataTable data={country.data} year={selectedYear} columns={selectedColumns} />
+      <DataTable
+        data={country.data}
+        year={selectedYear}
+        columns={selectedColumns}
+      />
     </div>
   );
-};
+});
