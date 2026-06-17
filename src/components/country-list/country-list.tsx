@@ -9,7 +9,7 @@ import {
 import { CountryCard } from '../country-card/country-card';
 
 import styles from './country-list.module.css';
-
+const LIMIT = 20;
 type CountryListProps = {
   countries: Country[];
   searchQuery: string;
@@ -90,10 +90,12 @@ export const CountryList = ({
     sortOrder,
   ]);
 
-
+const visibleCountries = useMemo(() => {
+  return filteredCountries.slice(0, LIMIT);
+}, [filteredCountries]);
   return (
     <div className={styles.countryList}>
-      {filteredCountries.map((country) => (
+      {visibleCountries.map((country) => (
         <CountryCard
           key={country.id}
           country={country}

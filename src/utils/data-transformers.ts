@@ -46,7 +46,7 @@ export const getCo2ForYear = (yearMap: Map<number, YearData>, year: number): num
 };
 
 export const getAvailableYears = (countries: Country[]): number[] => {
-  const years = new Set<number>();
+  const years = new Set<number>();  
 
   countries.forEach((country) => {
     country.data.forEach((yearData) => {
@@ -54,5 +54,5 @@ export const getAvailableYears = (countries: Country[]): number[] => {
     });
   });
 
-  return Array.from(years).sort((a, b) => a - b);
+  return Array.from(years).sort((a, b)   => a - b);
 };
